@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { songs, type Song } from '../data/songs'
-import { createStoredSongs, loadStoredSongs, materializeSong, saveStoredSongs } from '../data/localLibrary'
+import { createStoredSongs, loadStoredSongs, materializeSong, saveStoredSongs, deleteStoredSong } from '../data/localLibrary'
 
 type RepeatMode = 'off' | 'all' | 'one'
 
@@ -17,6 +17,7 @@ type MusicContextValue = {
   error: string | null
   catalog: Song[]
   importLocalFiles: (audioFiles: File[], coverFile?: File) => Promise<number>
+  removeUploadedSong: (id: number) => Promise<void>
   playSong: (song: Song, nextQueue?: Song[]) => void
   playQueue: (nextQueue: Song[], startIndex?: number) => void
   togglePlay: () => void
@@ -74,6 +75,39 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
       return 0
     }
   }, [materializeUploadedSongs])
+
+  const removeUploadedSong = useCallback(async (id: number) => {
+    try {
+      await deleteStoredSong(id)
+    } catch {
+      setError('Could not remove uploaded song from storage.')
+      return
+    }
+
+    setCatalog((currentCatalog) => {
+      const song = currentCatalog.find((s) => s.id === id)
+      if (!song) return currentCatalog
+      if (song.audioUrl?.startsWith('blob:')) {
+        try { URL.revokeObjectURL(song.audioUrl) } catch {}
+        uploadedUrlsRef.current = uploadedUrlsRef.current.filter((u) => u !== song.audioUrl)
+      }
+      if (song.coverUrl?.startsWith('blob:')) {
+        try { URL.revokeObjectURL(song.coverUrl) } catch {}
+        uploadedUrlsRef.current = uploadedUrlsRef.current.filter((u) => u !== song.coverUrl)
+      }
+      return currentCatalog.filter((s) => s.id !== id)
+    })
+
+    setQueue((q) => q.filter((s) => s.id !== id))
+
+    setCurrentSong((cur) => {
+      if (cur?.id === id) {
+        setIsPlaying(false)
+        return null
+      }
+      return cur
+    })
+  }, [deleteStoredSong])
 
   const playCurrentAudio = useCallback(async () => {
     if (!audioRef.current || !currentSong) return
@@ -221,6 +255,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     <MusicContext.Provider value={{
       currentSong, isPlaying, queue, volume, isMuted, repeat, shuffle, currentTime, duration, error, catalog,
       importLocalFiles,
+      removeUploadedSong,
       playSong, playQueue, togglePlay, next, previous, seek, setVolume,
       toggleMute: () => setIsMuted((muted) => !muted),
       toggleRepeat,

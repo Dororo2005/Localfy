@@ -74,3 +74,6 @@ export const materializeSong = (song: StoredSong) => ({
   audioUrl: URL.createObjectURL(song.audioFile),
   coverUrl: song.coverFile ? URL.createObjectURL(song.coverFile) : FALLBACK_COVER,
 })
+
+export const deleteStoredSong = (id: number) =>
+  withStore<void>('readwrite', (store) => store.delete(id))

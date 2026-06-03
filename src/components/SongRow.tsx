@@ -1,10 +1,10 @@
-import { Pause, Play, Volume2 } from 'lucide-react'
+import { Pause, Play, Volume2, Trash2 } from 'lucide-react'
 import { useMusic } from '../context/MusicContext'
 import type { Song } from '../data/songs'
 import styles from '../styles/App.module.css'
 
 export const SongRow = ({ song, index, queue }: { song: Song; index: number; queue?: Song[] }) => {
-  const { currentSong, isPlaying, playSong, togglePlay } = useMusic()
+  const { currentSong, isPlaying, playSong, togglePlay, removeUploadedSong } = useMusic()
   const isCurrent = currentSong?.id === song.id
   const handlePlay = () => isCurrent ? togglePlay() : playSong(song, queue)
 
@@ -22,6 +22,19 @@ export const SongRow = ({ song, index, queue }: { song: Song; index: number; que
       <span className={styles.rowAlbum}>{song.album}</span>
       <span className={styles.rowPlaylist}>{song.playlist}</span>
       <span className={styles.rowDuration}>{song.duration}</span>
+      {song.isUploaded && (
+        <button
+          className={styles.rowDelete}
+          aria-label={`Delete ${song.title}`}
+          onClick={async (e) => {
+            e.stopPropagation()
+            if (!confirm(`Delete "${song.title}"?`)) return
+            await removeUploadedSong(song.id)
+          }}
+        >
+          <Trash2 size={15} />
+        </button>
+      )}
     </div>
   )
 }
