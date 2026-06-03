@@ -1,0 +1,131 @@
+.app { display: grid; grid-template-columns: 238px 1fr; grid-template-rows: 1fr 92px; min-height: 100vh; background: #090b0c; }
+.sidebar { grid-row: 1; padding: 22px 14px; background: #0d1011; border-right: 1px solid #1d2223; display: flex; flex-direction: column; min-height: 0; }
+.brand { display: flex; gap: 10px; align-items: center; padding: 0 8px 24px; font-family: Arial, sans-serif; font-size: 21px; font-weight: 800; letter-spacing: -.06em; }
+.logoMark { display: grid; place-items: center; width: 34px; height: 34px; color: #0a1510; background: #55d991; border-radius: 50%; }
+.primaryNav { display: grid; gap: 4px; padding-bottom: 20px; border-bottom: 1px solid #222728; }
+.navItem { display: flex; align-items: center; gap: 14px; padding: 10px 8px; color: #9da5a2; font-size: 14px; font-weight: 700; border-radius: 7px; transition: .2s; }
+.navItem:hover, .navActive { color: white; background: #191d1e; }
+.playlistNav { display: flex; flex-direction: column; min-height: 0; padding: 22px 8px; }
+.sidebarHeading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; color: #8d9693; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.sidebarHeading a, .header button, .controls button, .volume button { display: grid; place-items: center; padding: 0; color: #aeb6b3; background: transparent; border: 0; transition: .2s; }
+.sidebarHeading a:hover, .header button:hover, .controls button:hover, .volume button:hover { color: white; transform: scale(1.06); }
+.playlistLink { padding: 8px 0; overflow: hidden; color: #9ba3a1; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; transition: .2s; }
+.playlistLink:hover, .playlistActive { color: #fff; }
+.sidebarFoot { margin-top: auto; padding: 10px 8px 0; color: #596260; font-size: 11px; }
+.main { min-width: 0; min-height: 0; overflow-y: auto; background: radial-gradient(circle at 30% -10%, #203e33 0, #111718 28%, #0e1112 52%); }
+.header { position: sticky; z-index: 3; top: 0; display: flex; justify-content: space-between; align-items: center; height: 66px; padding: 0 32px; background: rgb(14 17 18 / 78%); backdrop-filter: blur(18px); }
+.header > div { display: flex; gap: 9px; }
+.header button { width: 34px; height: 34px; border-radius: 50%; background: #090b0caa; }
+.profile { display: flex; align-items: center; gap: 7px; padding: 7px 12px; font-size: 12px; font-weight: 700; background: #090b0caa; border: 1px solid #252b2b; border-radius: 20px; }
+.page { display: grid; gap: 36px; padding: 28px 32px 48px; }
+.hero { padding: 22px 0 12px; }
+.hero h1, .pageTitle h1, .searchHead h1 { margin: 6px 0 5px; font-size: clamp(32px, 5vw, 48px); }
+.hero p, .pageTitle p, .sectionHeading p { color: #a4adaa; font-size: 14px; }
+.eyebrow { color: #62d998; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.page h2 { margin-bottom: 16px; font-size: 22px; }
+.quickGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.quickCard { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 0 10px 0 0; overflow: hidden; text-align: left; background: #ffffff12; border: 1px solid #ffffff08; border-radius: 6px; transition: .2s; }
+.quickCard:hover { background: #ffffff20; transform: translateY(-2px); }
+.quickCard img { width: 56px; height: 56px; object-fit: cover; }
+.quickCard strong { min-width: 0; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.quickCard span { display: grid; flex: 0 0 auto; place-items: center; width: 30px; height: 30px; margin-left: auto; color: #102118; background: #55d991; border-radius: 50%; opacity: 0; transition: .2s; }
+.quickCard:hover span { opacity: 1; }
+.sectionHeading { display: flex; align-items: end; justify-content: space-between; }
+.sectionHeading h2 { margin-bottom: 3px; }
+.cardGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; }
+.card { min-width: 0; padding: 12px; background: #15191a; border: 1px solid transparent; border-radius: 9px; transition: .25s; }
+.card:hover { background: #1c2222; border-color: #26302e; transform: translateY(-4px); }
+.cardImageWrap { position: relative; aspect-ratio: 1; margin-bottom: 13px; }
+.cardImage { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; box-shadow: 0 12px 30px #0005; }
+.cardPlay { position: absolute; right: 8px; bottom: 8px; display: grid; place-items: center; width: 42px; height: 42px; color: #102118; background: #55d991; border-radius: 50%; opacity: 0; box-shadow: 0 6px 12px #0007; transform: translateY(6px); transition: .2s; }
+.card:hover .cardPlay { opacity: 1; transform: translateY(0); }
+.card strong, .card > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card strong { font-size: 14px; }
+.card > span { margin-top: 5px; color: #949d9a; font-size: 12px; }
+.songList { overflow: hidden; border-radius: 7px; }
+.songRow { display: grid; grid-template-columns: 30px 42px minmax(130px, 1.5fr) minmax(120px, 1fr) minmax(100px, .8fr) 42px; gap: 12px; align-items: center; min-height: 60px; padding: 7px 12px; color: #aeb6b3; font-size: 13px; border-bottom: 1px solid #ffffff07; transition: .18s; }
+.songRow:hover, .currentRow { background: #ffffff0d; color: white; }
+.rowPlay { display: grid; width: 30px; height: 30px; place-items: center; color: inherit; background: transparent; border: 0; }
+.rowAction { display: none; }
+.songRow:hover .rowIndex { display: none; }
+.songRow:hover .rowAction { display: inline-flex; }
+.currentRow .songMain strong { color: #55d991; }
+.rowCover { width: 42px; height: 42px; object-fit: cover; border-radius: 3px; }
+.songMain { display: grid; gap: 3px; min-width: 0; }
+.songMain strong, .songMain span, .rowAlbum, .rowPlaylist { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.songMain strong { color: white; font-size: 14px; }
+.songMain span { color: #9ca5a2; font-size: 12px; }
+.rowDuration { text-align: right; }
+.searchHead { display: grid; gap: 6px; }
+.searchBar { display: flex; align-items: center; gap: 10px; width: min(430px, 100%); margin-top: 12px; padding: 12px 15px; color: #25302d; background: #f3f6f5; border-radius: 24px; }
+.searchBar input { min-width: 0; flex: 1; background: transparent; border: 0; outline: 0; }
+.empty { display: grid; min-height: 210px; place-content: center; gap: 6px; padding: 20px; color: #a3adaa; text-align: center; }
+.empty h3 { color: white; }
+.uploader { display: grid; gap: 17px; padding: 19px; background: linear-gradient(135deg, #17372d, #151a1a 72%); border: 1px solid #2c4b41; border-radius: 10px; }
+.uploadIntro { display: flex; align-items: center; gap: 13px; }
+.uploadIntro h2 { margin-bottom: 3px; font-size: 20px; }
+.uploadIntro p, .uploadMessage { color: #afc2bc; font-size: 13px; }
+.uploadIcon { display: grid; flex: 0 0 auto; width: 40px; height: 40px; place-items: center; color: #163127; background: #61db98; border-radius: 50%; }
+.uploadActions { display: flex; flex-wrap: wrap; gap: 9px; }
+.filePicker, .importButton { display: flex; align-items: center; gap: 7px; min-width: 0; padding: 10px 12px; font-size: 13px; font-weight: 700; border-radius: 6px; transition: .2s; }
+.filePicker { color: #d4dfdc; background: #ffffff0b; border: 1px solid #ffffff18; cursor: pointer; }
+.filePicker:hover { background: #ffffff14; border-color: #ffffff2a; }
+.filePicker span { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.filePicker input { display: none; }
+.importButton { margin-left: auto; color: #102118; background: #55d991; border: 0; }
+.importButton:hover:not(:disabled) { background: #72e4a8; transform: translateY(-1px); }
+.importButton:disabled { cursor: not-allowed; opacity: .45; }
+.uploadMessage { color: #72e4a8; }
+.playlistHero { display: flex; align-items: end; gap: 24px; padding: 64px 32px 28px; }
+.playlistHero img { width: min(220px, 26vw); aspect-ratio: 1; object-fit: cover; border-radius: 5px; box-shadow: 0 18px 35px #0007; }
+.playlistHero h1 { margin: 4px 0; font-size: clamp(42px, 7vw, 76px); }
+.playlistHero p { margin-bottom: 9px; color: #d0d7d5; }
+.playlistHero strong { font-size: 13px; }
+.playlistBody { min-height: 360px; padding: 24px 32px 48px; background: linear-gradient(#ffffff08, transparent 160px); }
+.bigPlay { display: grid; width: 52px; height: 52px; margin-bottom: 18px; place-items: center; color: #0b1712; background: #55d991; border: 0; border-radius: 50%; transition: .2s; }
+.bigPlay:hover { transform: scale(1.05); background: #69e5a4; }
+.player { z-index: 5; grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: minmax(190px, 1fr) minmax(290px, 1.4fr) minmax(160px, 1fr); gap: 18px; align-items: center; padding: 10px 16px; background: #101314; border-top: 1px solid #272d2d; }
+.nowPlaying { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.nowPlaying img { width: 56px; height: 56px; object-fit: cover; border-radius: 4px; }
+.nowPlaying div { display: grid; gap: 4px; min-width: 0; }
+.nowPlaying strong, .nowPlaying span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nowPlaying strong { font-size: 13px; }
+.nowPlaying span { color: #97a09e; font-size: 11px; }
+.playerCenter { position: relative; display: grid; gap: 6px; }
+.controls { display: flex; justify-content: center; align-items: center; gap: 19px; }
+.controls .controlActive { color: #55d991; }
+.controls .mainPlay { width: 34px; height: 34px; color: #121515; background: white; border-radius: 50%; }
+.controls .mainPlay:hover { color: #121515; transform: scale(1.06); }
+.timeline { display: flex; align-items: center; gap: 8px; color: #929b99; font-size: 10px; }
+.timeline input { min-width: 0; flex: 1; }
+.volume { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.volume input { width: min(95px, 65%); }
+.playerError { position: absolute; right: 0; bottom: calc(100% + 14px); left: 0; overflow: hidden; padding: 8px 12px; color: #ffd9cc; font-size: 11px; text-align: center; text-overflow: ellipsis; white-space: nowrap; background: #5f2d22; border-radius: 5px; box-shadow: 0 5px 16px #0005; }
+code { color: #72dea4; font-size: .92em; }
+@media (max-width: 820px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 1fr 78px 62px; }
+  .sidebar { z-index: 6; grid-row: 3; flex-direction: row; align-items: center; justify-content: space-around; padding: 4px 8px; border-top: 1px solid #262d2b; border-right: 0; }
+  .brand, .playlistNav, .sidebarFoot { display: none; }
+  .primaryNav { display: contents; }
+  .navItem { flex-direction: column; gap: 3px; padding: 6px 12px; font-size: 10px; }
+  .main { grid-row: 1; }
+  .header { height: 56px; padding: 0 18px; }
+  .page { gap: 30px; padding: 20px 18px 36px; }
+  .quickGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cardGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .card { padding: 9px; }
+  .uploadActions { display: grid; }
+  .importButton { justify-content: center; margin-left: 0; }
+  .rowAlbum, .rowPlaylist { display: none; }
+  .songRow { grid-template-columns: 24px 38px minmax(0, 1fr) 36px; gap: 9px; padding: 6px 5px; }
+  .rowCover { width: 38px; height: 38px; }
+  .playlistHero { gap: 16px; align-items: center; padding: 34px 18px 21px; }
+  .playlistHero h1 { font-size: clamp(29px, 9vw, 46px); }
+  .playlistBody { padding: 18px 14px 32px; }
+  .player { grid-row: 2; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; padding: 9px 12px; }
+  .nowPlaying img { width: 48px; height: 48px; }
+  .playerCenter { display: flex; }
+  .controls { gap: 12px; }
+  .controls button:first-child, .controls button:last-child, .timeline, .volume { display: none; }
+  .playerError { right: 0; bottom: calc(100% + 21px); left: auto; width: min(400px, calc(100vw - 24px)); }
+}
