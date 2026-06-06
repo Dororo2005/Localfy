@@ -38,6 +38,7 @@ export default async function handler(request, response) {
     response.setHeader('Set-Cookie', serializeCookie('localfy_session', token, {
       httpOnly: true,
       sameSite: 'Lax',
+      secure: process.env.VERCEL === '1' || process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24 * 7,
     }))
     response.setHeader('content-type', 'application/json; charset=utf-8')

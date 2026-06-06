@@ -30,6 +30,9 @@ export const serializeCookie = (name, value, options = {}) => {
   if (options.sameSite) {
     pieces.push(`SameSite=${options.sameSite}`)
   }
+  if (options.secure) {
+    pieces.push('Secure')
+  }
   return pieces.join('; ')
 }
 
