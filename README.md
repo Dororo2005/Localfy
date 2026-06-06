@@ -46,3 +46,14 @@ npm run dev
 
 Then open `http://127.0.0.1:8787`. The server serves the built app from `dist`
 and keeps the login session in a cookie.
+
+## Deploy to Vercel
+
+This repo is now Vercel-ready:
+
+- Static frontend is built to `dist`
+- Auth runs as Vercel serverless functions under `api/auth/*`
+- SPA routes fall back to `index.html`
+
+Set `AUTH_SECRET` in the Vercel project environment variables for production, then
+deploy the repo as usual.
