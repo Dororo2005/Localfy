@@ -15,8 +15,26 @@
 .main { min-width: 0; min-height: 0; overflow-y: auto; background: radial-gradient(circle at 30% -10%, #203e33 0, #111718 28%, #0e1112 52%); }
 .header { position: sticky; z-index: 3; top: 0; display: flex; justify-content: space-between; align-items: center; height: 66px; padding: 0 32px; background: rgb(14 17 18 / 78%); backdrop-filter: blur(18px); }
 .header > div { display: flex; gap: 9px; }
+.headerActions { display: flex; align-items: center; gap: 10px; }
 .header button { width: 34px; height: 34px; border-radius: 50%; background: #090b0caa; }
 .profile { display: flex; align-items: center; gap: 7px; padding: 7px 12px; font-size: 12px; font-weight: 700; background: #090b0caa; border: 1px solid #252b2b; border-radius: 20px; }
+.logoutButton { display: inline-flex; align-items: center; gap: 8px; width: auto !important; height: auto !important; padding: 8px 14px !important; font-size: 12px; font-weight: 700; background: #12211a !important; border: 1px solid #284738 !important; border-radius: 999px !important; }
+.logoutButton:hover { background: #163126 !important; }
+.authShell { display: grid; min-height: 100vh; place-items: center; padding: 24px; background: radial-gradient(circle at top, rgb(85 217 145 / 24%), transparent 28%), linear-gradient(180deg, #0d1513, #090b0c 58%); }
+.authPanel { width: min(460px, 100%); padding: 32px; background: rgb(14 18 17 / 92%); border: 1px solid #21342d; border-radius: 24px; box-shadow: 0 30px 80px #0008; }
+.authBrand { display: flex; gap: 16px; align-items: center; margin-bottom: 28px; }
+.authBrand p { color: #86b19d; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.authBrand h1 { margin-top: 4px; font-size: clamp(28px, 5vw, 36px); }
+.authLogo { display: grid; flex: 0 0 auto; place-items: center; width: 56px; height: 56px; color: #0b1712; background: linear-gradient(135deg, #7af0ae, #55d991); border-radius: 18px; }
+.authForm { display: grid; gap: 18px; }
+.authField { display: grid; gap: 9px; }
+.authField span { font-size: 13px; font-weight: 700; color: #d4ddd9; }
+.authField div { display: flex; align-items: center; gap: 10px; padding: 0 14px; background: #0f1514; border: 1px solid #24302d; border-radius: 14px; }
+.authField input { width: 100%; padding: 14px 0; color: #f5f7f6; background: transparent; border: 0; outline: 0; }
+.authField input::placeholder { color: #6f7d78; }
+.authError { padding: 12px 14px; color: #ffd8cf; font-size: 13px; background: #5f2d22; border-radius: 12px; }
+.authSubmit { width: 100%; min-height: 48px; color: #0b1712; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #7af0ae, #55d991) !important; border: 0 !important; border-radius: 14px !important; }
+.authSubmit:hover { filter: brightness(1.04); transform: translateY(-1px); }
 .page { display: grid; gap: 36px; padding: 28px 32px 48px; }
 .hero { padding: 22px 0 12px; }
 .hero h1, .pageTitle h1, .searchHead h1 { margin: 6px 0 5px; font-size: clamp(32px, 5vw, 48px); }
@@ -112,7 +130,11 @@ code { color: #72dea4; font-size: .92em; }
   .navItem { flex-direction: column; gap: 3px; padding: 6px 12px; font-size: 10px; }
   .main { grid-row: 1; }
   .header { height: 56px; padding: 0 18px; }
+  .headerActions { gap: 8px; }
+  .logoutButton { padding: 8px 10px !important; }
+  .logoutButton span { display: none; }
   .page { gap: 30px; padding: 20px 18px 36px; }
+  .authPanel { padding: 24px 20px; border-radius: 20px; }
   .quickGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cardGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .card { padding: 9px; }
