@@ -27,4 +27,22 @@ npm run dev
 ```
 
 Use `npm run build` to verify a production build.
-# Localfy
+
+## Demo login
+
+Localfy now includes a small Node auth server in `server/index.mjs`. It keeps a
+session cookie and validates login against the bundled user store.
+
+- Email: `admin@localfy.app`
+- Password: `Localfy123`
+
+## Run auth locally
+
+Start the auth server:
+
+```bash
+node server/index.mjs
+```
+
+Then start the Vite frontend as usual. The dev server proxies `/api` to
+`http://127.0.0.1:8787`.

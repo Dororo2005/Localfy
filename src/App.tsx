@@ -11,7 +11,26 @@ import { Search } from './pages/Search'
 import styles from './styles/App.module.css'
 
 export const App = () => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isLoading } = useAuth()
+
+  if (isLoading) {
+    return (
+      <div className={styles.authShell}>
+        <div className={styles.authPanel}>
+          <div className={styles.authBrand}>
+            <span className={styles.authLogo}>
+              <span>♪</span>
+            </span>
+            <div>
+              <p>Localfy</p>
+              <h1>Dang tai trang thai dang nhap</h1>
+            </div>
+          </div>
+          <p className={styles.authLoading}>Dang kiem tra phien lam viec...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!isAuthenticated) {
     return (

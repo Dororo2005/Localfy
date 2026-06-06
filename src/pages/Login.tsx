@@ -1,29 +1,31 @@
 import { useState, type FormEvent } from 'react'
 import { ListMusic, LockKeyhole, Mail } from 'lucide-react'
-import { Navigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import styles from '../styles/App.module.css'
 
 export const Login = () => {
-  const { isAuthenticated, login } = useAuth()
+  const navigate = useNavigate()
+  const { isAuthenticated, isLoading, login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
-  if (isAuthenticated) {
+  if (!isLoading && isAuthenticated) {
     return <Navigate to="/" replace />
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const result = login({ email, password })
+    const result = await login({ email, password })
     if (!result.success) {
       setErrorMessage(result.message ?? 'Dang nhap that bai.')
       return
     }
 
     setErrorMessage('')
+    navigate('/', { replace: true })
   }
 
   return (
@@ -40,6 +42,11 @@ export const Login = () => {
         </div>
 
         <form className={styles.authForm} onSubmit={handleSubmit}>
+          <div className={styles.authHint}>
+            <strong>Dang nhap an toan</strong>
+            <span>Du lieu dang nhap duoc xac thuc qua may chu va luu bang cookie.</span>
+          </div>
+
           <label className={styles.authField}>
             <span>Email</span>
             <div>

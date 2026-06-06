@@ -1,0 +1,10 @@
+[
+  {
+    "id": "user_1",
+    "name": "Local Admin",
+    "email": "admin@localfy.app",
+    "role": "admin",
+    "salt": "c2d2f8a7e3b14d1a",
+    "passwordHash": "ce868a9577cf5b707eb83aa7cbca0b161848657d6b7c0af5d1fef2f5c79f13e6"
+  }
+]
