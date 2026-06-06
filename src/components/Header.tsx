@@ -1,16 +1,12 @@
-import { ChevronLeft, ChevronRight, LogOut, UserRound } from 'lucide-react'
+import { ChevronLeft, ChevronRight, UserRound } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { AuthActions } from './AuthActions'
 import styles from '../styles/App.module.css'
 
 export const Header = () => {
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
-
-  const handleLogout = async () => {
-    await logout()
-    navigate('/login', { replace: true })
-  }
+  const { user } = useAuth()
 
   return (
     <header className={styles.header}>
@@ -20,10 +16,7 @@ export const Header = () => {
       </div>
       <div className={styles.headerActions}>
         <span className={styles.profile}><UserRound size={16} /> {user?.name ?? 'Local Listener'}</span>
-        <button className={styles.logoutButton} onClick={handleLogout} type="button">
-          <LogOut size={16} />
-          <span>Dang xuat</span>
-        </button>
+        <AuthActions />
       </div>
     </header>
   )

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { ListMusic, LockKeyhole, Mail } from 'lucide-react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { AuthActions } from '../components/AuthActions'
 import styles from '../styles/App.module.css'
 
 export const Login = () => {
@@ -30,6 +31,9 @@ export const Login = () => {
 
   return (
     <section className={styles.authShell}>
+      <div className={styles.authTopBar}>
+        <AuthActions />
+      </div>
       <div className={styles.authPanel}>
         <div className={styles.authBrand}>
           <span className={styles.authLogo}>
@@ -43,8 +47,9 @@ export const Login = () => {
 
         <form className={styles.authForm} onSubmit={handleSubmit}>
           <div className={styles.authHint}>
-            <strong>Dang nhap an toan</strong>
-            <span>Du lieu dang nhap duoc xac thuc qua may chu va luu bang cookie.</span>
+            <strong>Tai khoan demo</strong>
+            <span>Email: admin@localfy.app</span>
+            <span>Mat khau: Localfy123</span>
           </div>
 
           <label className={styles.authField}>
