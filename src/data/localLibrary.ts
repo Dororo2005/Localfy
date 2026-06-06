@@ -76,4 +76,4 @@ export const materializeSong = (song: StoredSong) => ({
 })
 
 export const deleteStoredSong = (id: number) =>
-  withStore<undefined>('readwrite', (store) => store.delete(id))
+  withStore<void>('readwrite', (store) => store.delete(id) as IDBRequest<void>)
