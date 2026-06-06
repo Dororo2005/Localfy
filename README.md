@@ -38,11 +38,11 @@ session cookie and validates login against the bundled user store.
 
 ## Run auth locally
 
-Start the auth server:
+Start the app and auth server:
 
 ```bash
-node server/index.mjs
+npm run dev
 ```
 
-Then start the Vite frontend as usual. The dev server proxies `/api` to
-`http://127.0.0.1:8787`.
+Then open `http://127.0.0.1:8787`. The server serves the built app from `dist`
+and keeps the login session in a cookie.
