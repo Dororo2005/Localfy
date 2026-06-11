@@ -39,6 +39,10 @@
 .authField div { display: flex; align-items: center; gap: 10px; padding: 0 14px; background: #0f1514; border: 1px solid #24302d; border-radius: 14px; }
 .authField input { width: 100%; padding: 14px 0; color: #f5f7f6; background: transparent; border: 0; outline: 0; }
 .authField input::placeholder { color: #6f7d78; }
+.authMeta { display: flex; justify-content: flex-end; margin-top: -6px; }
+.authTextButton { padding: 0; color: #7ed8a8; font-size: 13px; font-weight: 700; background: transparent; border: 0; }
+.authTextButton:hover { color: #a8efc8; text-decoration: underline; }
+.authSuccess { padding: 12px 14px; color: #d9ffe8; font-size: 13px; background: #1d4c37; border-radius: 12px; }
 .authError { padding: 12px 14px; color: #ffd8cf; font-size: 13px; background: #5f2d22; border-radius: 12px; }
 .authSubmit { width: 100%; min-height: 48px; color: #0b1712; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #7af0ae, #55d991) !important; border: 0 !important; border-radius: 14px !important; }
 .authSubmit:hover { filter: brightness(1.04); transform: translateY(-1px); }

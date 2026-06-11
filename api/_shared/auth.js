@@ -1,7 +1,10 @@
-import { createHmac, pbkdf2Sync, timingSafeEqual } from 'node:crypto'
+import { createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from 'node:crypto'
+import { readFile, writeFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'localfy-vercel-demo-secret'
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7
+const userStorePath = fileURLToPath(new URL('../../server/data/users.json', import.meta.url))
 
 export const demoUser = {
   id: 'user_1',
@@ -12,7 +15,23 @@ export const demoUser = {
   passwordHash: 'ce868a9577cf5b707eb83aa7cbca0b161848657d6b7c0af5d1fef2f5c79f13e6',
 }
 
-export const users = [demoUser]
+const readJson = async (filePath, fallback) => {
+  try {
+    const raw = await readFile(filePath, 'utf8')
+    return JSON.parse(raw)
+  } catch {
+    return fallback
+  }
+}
+
+export const getUsers = async () => {
+  const users = await readJson(userStorePath, [demoUser])
+  return Array.isArray(users) && users.length > 0 ? users : [demoUser]
+}
+
+const writeUsers = async (users) => {
+  await writeFile(userStorePath, `${JSON.stringify(users, null, 2)}\n`, 'utf8')
+}
 
 const base64UrlEncode = (value) => Buffer.from(value).toString('base64url')
 
@@ -54,6 +73,35 @@ export const verifyPassword = (password, user) => {
     return false
   }
   return timingSafeEqual(expected, actual)
+}
+
+export const hashPassword = (password) => {
+  const salt = randomBytes(8).toString('hex')
+  const passwordHash = pbkdf2Sync(password, salt, 120000, 32, 'sha256').toString('hex')
+  return { salt, passwordHash }
+}
+
+export const findUserByEmail = async (email) => {
+  const users = await getUsers()
+  return users.find((entry) => entry.email.toLowerCase() === email.toLowerCase()) ?? null
+}
+
+export const resetUserPassword = async (email, password) => {
+  const users = await getUsers()
+  const userIndex = users.findIndex((entry) => entry.email.toLowerCase() === email.toLowerCase())
+
+  if (userIndex === -1) {
+    return null
+  }
+
+  const nextUsers = [...users]
+  nextUsers[userIndex] = {
+    ...nextUsers[userIndex],
+    ...hashPassword(password),
+  }
+
+  await writeUsers(nextUsers)
+  return nextUsers[userIndex]
 }
 
 export const createSessionToken = (user) => {
@@ -102,7 +150,7 @@ export const verifySessionToken = (token) => {
   }
 }
 
-export const getAuthenticatedUser = (request) => {
+export const getAuthenticatedUser = async (request) => {
   const cookies = parseCookies(request.headers.cookie)
   const token = cookies.localfy_session
   if (!token) {
@@ -113,6 +161,8 @@ export const getAuthenticatedUser = (request) => {
   if (!payload) {
     return null
   }
+
+  const users = await getUsers()
 
   return (
     users.find((user) => user.id === payload.sub) ?? {

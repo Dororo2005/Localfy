@@ -2,7 +2,7 @@ import http from 'node:http'
 import path from 'node:path'
 import { randomBytes, randomUUID, pbkdf2Sync, timingSafeEqual } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { readFile, stat } from 'node:fs/promises'
+import { readFile, stat, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -152,6 +152,24 @@ const verifyPassword = (password, user) => {
   return timingSafeEqual(expected, actual)
 }
 
+const hashPassword = (password) => {
+  const salt = randomBytes(8).toString('hex')
+  const passwordHash = pbkdf2Sync(password, salt, 120000, 32, 'sha256').toString('hex')
+  return { salt, passwordHash }
+}
+
+const persistUsers = async () => {
+  await writeFile(userStorePath, `${JSON.stringify(users, null, 2)}\n`, 'utf8')
+}
+
+const clearUserSessions = (userId) => {
+  for (const [sessionId, session] of sessions.entries()) {
+    if (session.userId === userId) {
+      sessions.delete(sessionId)
+    }
+  }
+}
+
 const tryServeStatic = async (requestPath, response) => {
   const assetPath = requestPath === '/' ? 'index.html' : requestPath.replace(/^\//, '')
   const resolvedPath = path.join(clientDistDir, assetPath)
@@ -298,6 +316,47 @@ const server = http.createServer(async (request, response) => {
         }),
       },
     )
+    return
+  }
+
+  if (url.pathname === '/api/auth/reset-password' && request.method === 'POST') {
+    try {
+      const body = await readBody(request)
+      const email = String(body.email ?? '').trim().toLowerCase()
+      const newPassword = String(body.newPassword ?? '').trim()
+      const confirmPassword = String(body.confirmPassword ?? '').trim()
+
+      if (!email || !newPassword || !confirmPassword) {
+        sendJson(response, 400, { message: 'Vui long nhap day du email va mat khau moi.' }, corsHeaders)
+        return
+      }
+
+      if (newPassword.length < 6) {
+        sendJson(response, 400, { message: 'Mat khau moi phai co it nhat 6 ky tu.' }, corsHeaders)
+        return
+      }
+
+      if (newPassword !== confirmPassword) {
+        sendJson(response, 400, { message: 'Xac nhan mat khau moi khong khop.' }, corsHeaders)
+        return
+      }
+
+      const user = users.find((entry) => entry.email.toLowerCase() === email)
+      if (!user) {
+        sendJson(response, 404, { message: 'Khong tim thay tai khoan voi email nay.' }, corsHeaders)
+        return
+      }
+
+      const nextPassword = hashPassword(newPassword)
+      user.salt = nextPassword.salt
+      user.passwordHash = nextPassword.passwordHash
+      clearUserSessions(user.id)
+      await persistUsers()
+
+      sendJson(response, 200, { message: 'Da cap nhat mat khau moi thanh cong.' }, corsHeaders)
+    } catch {
+      sendJson(response, 400, { message: 'Khong the cap nhat mat khau luc nay.' }, corsHeaders)
+    }
     return
   }
 

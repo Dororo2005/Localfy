@@ -1,4 +1,4 @@
-import { createSessionToken, serializeCookie, users, verifyPassword } from '../_shared/auth.js'
+import { createSessionToken, findUserByEmail, serializeCookie, verifyPassword } from '../_shared/auth.js'
 
 export default async function handler(request, response) {
   if (request.method !== 'POST') {
@@ -26,7 +26,7 @@ export default async function handler(request, response) {
       return
     }
 
-    const user = users.find((entry) => entry.email.toLowerCase() === email)
+    const user = await findUserByEmail(email)
     if (!user || !verifyPassword(password, user)) {
       response.setHeader('content-type', 'application/json; charset=utf-8')
       response.statusCode = 401

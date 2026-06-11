@@ -12,11 +12,18 @@ type LoginInput = {
   password: string
 }
 
+type ResetPasswordInput = {
+  email: string
+  newPassword: string
+  confirmPassword: string
+}
+
 type AuthContextValue = {
   isLoading: boolean
   isAuthenticated: boolean
   user: AuthUser | null
   login: (input: LoginInput) => Promise<{ success: boolean; message?: string }>
+  resetPassword: (input: ResetPasswordInput) => Promise<{ success: boolean; message?: string }>
   logout: () => Promise<void>
 }
 
@@ -112,6 +119,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
           setUser(nextUser)
           return { success: true }
+        } catch {
+          return { success: false, message: 'Khong the ket noi toi may chu dang nhap.' }
+        }
+      },
+      resetPassword: async ({ email, newPassword, confirmPassword }) => {
+        const normalizedEmail = email.trim().toLowerCase()
+        const normalizedPassword = newPassword.trim()
+        const normalizedConfirmPassword = confirmPassword.trim()
+
+        if (!normalizedEmail || !normalizedPassword || !normalizedConfirmPassword) {
+          return { success: false, message: 'Vui long nhap day du email va mat khau moi.' }
+        }
+
+        if (normalizedPassword !== normalizedConfirmPassword) {
+          return { success: false, message: 'Xac nhan mat khau moi khong khop.' }
+        }
+
+        try {
+          const { response, data } = await apiFetch('/api/auth/reset-password', {
+            method: 'POST',
+            body: JSON.stringify({
+              email: normalizedEmail,
+              newPassword: normalizedPassword,
+              confirmPassword: normalizedConfirmPassword,
+            }),
+          })
+
+          if (!response.ok) {
+            const message =
+              data && typeof data === 'object' && 'message' in data
+                ? String((data as { message?: string }).message ?? 'Khong the cap nhat mat khau.')
+                : 'Khong the cap nhat mat khau.'
+            return { success: false, message }
+          }
+
+          const message =
+            data && typeof data === 'object' && 'message' in data
+              ? String((data as { message?: string }).message ?? 'Da cap nhat mat khau moi.')
+              : 'Da cap nhat mat khau moi.'
+
+          return { success: true, message }
         } catch {
           return { success: false, message: 'Khong the ket noi toi may chu dang nhap.' }
         }

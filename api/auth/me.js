@@ -1,7 +1,7 @@
 import { getAuthenticatedUser } from '../_shared/auth.js'
 
-export default function handler(request, response) {
-  const user = getAuthenticatedUser(request)
+export default async function handler(request, response) {
+  const user = await getAuthenticatedUser(request)
   response.setHeader('content-type', 'application/json; charset=utf-8')
 
   if (!user) {
