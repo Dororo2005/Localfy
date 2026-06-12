@@ -6,12 +6,12 @@ import styles from '../styles/App.module.css'
 
 export const Search = () => {
   const [query, setQuery] = useState('')
-  const { catalog } = useMusic()
+  const { catalog, getSongPlaylistNames } = useMusic()
   const results = useMemo(() => {
     const normalized = query.trim().toLowerCase()
     if (!normalized) return catalog
-    return catalog.filter((song) => [song.title, song.artist, song.album, song.playlist].some((field) => field.toLowerCase().includes(normalized)))
-  }, [catalog, query])
+    return catalog.filter((song) => [song.title, song.artist, song.album, ...getSongPlaylistNames(song)].some((field) => field.toLowerCase().includes(normalized)))
+  }, [catalog, getSongPlaylistNames, query])
 
   return (
     <div className={styles.page}>

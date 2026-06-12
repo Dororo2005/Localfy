@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import { playlists } from '../data/playlists'
 import { songs, type Song } from '../data/songs'
 import { createStoredSongs, loadStoredSongs, materializeSong, saveStoredSongs, deleteStoredSong } from '../data/localLibrary'
+import { loadPlaylistMemberships, savePlaylistMemberships, type PlaylistMemberships } from '../data/playlistMemberships'
 
 type RepeatMode = 'off' | 'all' | 'one'
 
@@ -16,8 +18,12 @@ type MusicContextValue = {
   duration: number
   error: string | null
   catalog: Song[]
+  getPlaylistSongs: (playlistId: string) => Song[]
+  getSongPlaylistNames: (song: Song) => string[]
   importLocalFiles: (audioFiles: File[], coverFile?: File) => Promise<number>
   removeUploadedSong: (id: number) => Promise<void>
+  addSongsToPlaylist: (playlistId: string, songIds: number[]) => void
+  removeSongsFromPlaylist: (playlistId: string, songIds: number[]) => void
   playSong: (song: Song, nextQueue?: Song[]) => void
   playQueue: (nextQueue: Song[], startIndex?: number) => void
   togglePlay: () => void
@@ -46,6 +52,45 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [playlistMemberships, setPlaylistMemberships] = useState<PlaylistMemberships>(() => loadPlaylistMemberships())
+
+  const revokeUrl = (url: string) => {
+    try {
+      URL.revokeObjectURL(url)
+    } catch {
+      return
+    }
+  }
+
+  const persistMemberships = useCallback((nextMemberships: PlaylistMemberships) => {
+    setPlaylistMemberships(nextMemberships)
+    savePlaylistMemberships(nextMemberships)
+  }, [])
+
+  const playlistNameById = useCallback((playlistId: string) =>
+    playlists.find((playlist) => playlist.id === playlistId)?.name,
+  [])
+
+  const getSongPlaylistNames = useCallback((song: Song) => playlists
+    .filter((playlist) => {
+      const baseMatch = song.playlist === playlist.name
+      const added = playlistMemberships.additions[playlist.id]?.includes(song.id) ?? false
+      const removed = playlistMemberships.removals[playlist.id]?.includes(song.id) ?? false
+      return (baseMatch || added) && !removed
+    })
+    .map((playlist) => playlist.name), [playlistMemberships])
+
+  const getPlaylistSongs = useCallback((playlistId: string) => {
+    const playlistName = playlistNameById(playlistId)
+    if (!playlistName) return []
+
+    return catalog.filter((song) => {
+      const baseMatch = song.playlist === playlistName
+      const added = playlistMemberships.additions[playlistId]?.includes(song.id) ?? false
+      const removed = playlistMemberships.removals[playlistId]?.includes(song.id) ?? false
+      return (baseMatch || added) && !removed
+    })
+  }, [catalog, playlistMemberships, playlistNameById])
 
   const materializeUploadedSongs = useCallback((storedSongs: Awaited<ReturnType<typeof loadStoredSongs>>) => {
     const uploadedSongs = storedSongs.map(materializeSong)
@@ -76,6 +121,58 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [materializeUploadedSongs])
 
+  const addSongsToPlaylist = useCallback((playlistId: string, songIds: number[]) => {
+    if (!songIds.length) return
+
+    const playlistName = playlistNameById(playlistId)
+    if (!playlistName) return
+
+    const nextMemberships: PlaylistMemberships = {
+      additions: { ...playlistMemberships.additions },
+      removals: { ...playlistMemberships.removals },
+    }
+
+    const additions = new Set(nextMemberships.additions[playlistId] ?? [])
+    const removals = new Set(nextMemberships.removals[playlistId] ?? [])
+
+    ;[...new Set(songIds)].forEach((songId) => {
+      const song = catalog.find((item) => item.id === songId)
+      if (!song) return
+      removals.delete(songId)
+      if (song.playlist !== playlistName) additions.add(songId)
+    })
+
+    nextMemberships.additions[playlistId] = [...additions]
+    nextMemberships.removals[playlistId] = [...removals]
+    persistMemberships(nextMemberships)
+  }, [catalog, persistMemberships, playlistMemberships, playlistNameById])
+
+  const removeSongsFromPlaylist = useCallback((playlistId: string, songIds: number[]) => {
+    if (!songIds.length) return
+
+    const playlistName = playlistNameById(playlistId)
+    if (!playlistName) return
+
+    const nextMemberships: PlaylistMemberships = {
+      additions: { ...playlistMemberships.additions },
+      removals: { ...playlistMemberships.removals },
+    }
+
+    const additions = new Set(nextMemberships.additions[playlistId] ?? [])
+    const removals = new Set(nextMemberships.removals[playlistId] ?? [])
+
+    ;[...new Set(songIds)].forEach((songId) => {
+      const song = catalog.find((item) => item.id === songId)
+      if (!song) return
+      additions.delete(songId)
+      if (song.playlist === playlistName) removals.add(songId)
+    })
+
+    nextMemberships.additions[playlistId] = [...additions]
+    nextMemberships.removals[playlistId] = [...removals]
+    persistMemberships(nextMemberships)
+  }, [catalog, persistMemberships, playlistMemberships, playlistNameById])
+
   const removeUploadedSong = useCallback(async (id: number) => {
     try {
       await deleteStoredSong(id)
@@ -88,14 +185,23 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
       const song = currentCatalog.find((s) => s.id === id)
       if (!song) return currentCatalog
       if (song.audioUrl?.startsWith('blob:')) {
-        try { URL.revokeObjectURL(song.audioUrl) } catch {}
+        revokeUrl(song.audioUrl)
         uploadedUrlsRef.current = uploadedUrlsRef.current.filter((u) => u !== song.audioUrl)
       }
       if (song.coverUrl?.startsWith('blob:')) {
-        try { URL.revokeObjectURL(song.coverUrl) } catch {}
+        revokeUrl(song.coverUrl)
         uploadedUrlsRef.current = uploadedUrlsRef.current.filter((u) => u !== song.coverUrl)
       }
       return currentCatalog.filter((s) => s.id !== id)
+    })
+
+    persistMemberships({
+      additions: Object.fromEntries(
+        Object.entries(playlistMemberships.additions).map(([playlistId, songIds]) => [playlistId, songIds.filter((songId) => songId !== id)]),
+      ),
+      removals: Object.fromEntries(
+        Object.entries(playlistMemberships.removals).map(([playlistId, songIds]) => [playlistId, songIds.filter((songId) => songId !== id)]),
+      ),
     })
 
     setQueue((q) => q.filter((s) => s.id !== id))
@@ -107,7 +213,7 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
       }
       return cur
     })
-  }, [deleteStoredSong])
+  }, [persistMemberships, playlistMemberships])
 
   const playCurrentAudio = useCallback(async () => {
     if (!audioRef.current || !currentSong) return
@@ -254,8 +360,12 @@ export const MusicProvider = ({ children }: { children: ReactNode }) => {
   return (
     <MusicContext.Provider value={{
       currentSong, isPlaying, queue, volume, isMuted, repeat, shuffle, currentTime, duration, error, catalog,
+      getPlaylistSongs,
+      getSongPlaylistNames,
       importLocalFiles,
       removeUploadedSong,
+      addSongsToPlaylist,
+      removeSongsFromPlaylist,
       playSong, playQueue, togglePlay, next, previous, seek, setVolume,
       toggleMute: () => setIsMuted((muted) => !muted),
       toggleRepeat,
